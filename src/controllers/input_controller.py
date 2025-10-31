@@ -2,6 +2,7 @@ import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
 
+
 class SalesForecaster:
     def __init__(self, file_path: str):
         if not isinstance(file_path, str):
@@ -34,6 +35,50 @@ class SalesForecaster:
         print("✅ Data loaded and cleaned successfully.")
         print(self.df.head())
 
+    def summarize_sales(self):
+        """Prints daily and weekly total sales summaries."""
+        if self.df is None:
+            raise ValueError("Dataframe not loaded. Run load_and_clean_data() first.")
+
+        # --- Daily sales ---
+        daily_sales = self.df.groupby("Date")["Total"].sum().reset_index()
+        print("\n📅 Daily Sales Summary:")
+        print(daily_sales.tail(10))
+
+        # --- Weekly sales ---
+        self.df["Week"] = self.df["Date"].dt.to_period("W").apply(lambda r: r.start_time)
+        weekly_sales = self.df.groupby("Week")["Total"].sum().reset_index()
+
+        print("\n📈 Weekly Sales Summary:")
+        print(weekly_sales.tail(10))
+
+        # Store for visualization
+        self.daily_sales = daily_sales
+        self.weekly_sales = weekly_sales
+
+    def plot_sales_summary(self):
+        """Plots both daily and weekly sales trends."""
+        if not hasattr(self, "daily_sales") or not hasattr(self, "weekly_sales"):
+            raise ValueError("Run summarize_sales() before plotting summaries.")
+
+        # Daily sales trend
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.daily_sales["Date"], self.daily_sales["Total"], marker='o', label="Daily Sales")
+        plt.title("Daily Sales Trend")
+        plt.xlabel("Date")
+        plt.ylabel("Total Sales ($)")
+        plt.legend()
+        plt.show()
+
+        # Weekly sales trend
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.weekly_sales["Week"], self.weekly_sales["Total"], marker='s', color="orange", label="Weekly Sales")
+        plt.title("Weekly Sales Trend")
+        plt.xlabel("Week Starting")
+        plt.ylabel("Total Sales ($)")
+        plt.legend()
+        plt.show()
+
     def prepare_data_for_prophet(self):
         """Prepares dataframe for Prophet model."""
         if self.df is None:
@@ -61,9 +106,22 @@ class SalesForecaster:
         if self.model is None:
             raise ValueError("Model not trained. Run train_model() first.")
 
+        # Forecast daily data for next N days
         future = self.model.make_future_dataframe(periods=days)
         self.forecast = self.model.predict(future)
-        print(f"✅ Forecast generated for {days} days.")
+        print(f"✅ Forecast generated for {days} future days.")
+
+        # Add daily forecast summary
+        forecast_summary = self.forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail(days)
+        print("\n🔮 Future Daily Sales Predictions:")
+        print(forecast_summary)
+
+        # Add weekly forecast summary
+        self.forecast["Week"] = self.forecast["ds"].dt.to_period("W").apply(lambda r: r.start_time)
+        weekly_forecast = self.forecast.groupby("Week")[["yhat"]].mean().reset_index().tail(5)
+        print("\n📆 Future Weekly Sales Predictions (Averages):")
+        print(weekly_forecast)
+
         return self.forecast
 
     def plot_forecast(self):
@@ -72,7 +130,7 @@ class SalesForecaster:
             raise ValueError("Forecast not generated. Run make_forecast() first.")
 
         self.model.plot(self.forecast)
-        plt.title("Future Sales Forecast")
+        plt.title("Future Daily Sales Forecast")
         plt.xlabel("Date")
         plt.ylabel("Total Sales ($)")
         plt.show()
@@ -82,7 +140,9 @@ class SalesForecaster:
 if __name__ == "__main__":
     forecaster = SalesForecaster("Sales Data - Sheet1.csv")
     forecaster.load_and_clean_data()
+    forecaster.summarize_sales()        # ✅ daily + weekly summaries
+    forecaster.plot_sales_summary()     # ✅ visualize both
     forecaster.prepare_data_for_prophet()
     forecaster.train_model()
-    forecaster.make_forecast(days=30)
+    forecaster.make_forecast(days=30)   # ✅ show daily & weekly future forecasts
     forecaster.plot_forecast()
