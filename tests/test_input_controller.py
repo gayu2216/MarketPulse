@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from sales_forecaster import SalesForecaster
+from src.controllers.input_controller import SalesForecaster
 
 
 # --- Helper fixture to create a temporary CSV dataset for testing ---
