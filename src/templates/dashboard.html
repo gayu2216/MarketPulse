@@ -1,0 +1,139 @@
+<!--
+  Dashboard template page creates a MarketPulse dashboard allowing “Upload,” “View Sales,” and “Settings.”
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MarketPulse Dashboard</title>
+    <style>
+      
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Body styles */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      /* Page container */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      /* Main Header content layout */
+      header {
+        width: 100%;
+        padding: 32px 48px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      /* 'MarketPulse' logo styles */
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      /* 'Home Page' (logo/link) layout */
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        color: #111;
+        text-decoration: none;
+        font-size: 20px;
+      }
+
+      /* 'Home Page' house icon styles */
+      .home-link svg {
+        width: 25px;
+        height: 25px;
+        stroke: #ff0000;
+        fill: #ff0000;
+        stroke-width: 1.0;
+      }
+
+      /* Container for action buttons/spaces them vertically */
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 60px;
+        align-items: center;
+        padding: 40px 24px 80px;
+      }
+
+      /* Row container for buttons/horizontally  */
+      .row {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        width: 100%;
+        max-width: 900px;
+      }
+
+      /* Button styles */
+      .btn-card {
+        width: 280px;
+        height: 160px;
+        border: none;
+        border-radius: 20px;
+        background: #e21b1b;
+        color: #ffffff;
+        font-size: 36px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.15s ease;
+      }
+
+      /* Button hover/lift effect */
+      .btn-row:hover {
+        transform: translateY(-6px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Page Container -->
+    <div class="page">
+        <!-- Header Section -->
+        <header>
+            <div class="logo">MarketPulse</div>
+            <a class="home-link" href="{{ url_for('dashboard') }}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2">
+                    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8 M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                Home Page
+            </a>
+      </header>
+      
+      <!-- Main Content Area -->
+      <main class="actions">
+        <div class="row">
+          <button class="btn-card" type="button">Upload</button>
+          <button class="btn-card" type="button">View Sales</button>
+        </div>
+        <div class="row">
+          <a class="btn-card" href="/settings">Settings</a>
+        </div>
+      </main>
+      <!-- End Main Content -->
+    </div>
+  </body>
+</html>

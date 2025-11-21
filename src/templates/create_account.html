@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MarketPulse - Create Account</title>
+    <style>
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Body styles */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      /* Main Header content layout */
+      header {
+        width: 100%;
+        padding: 32px 48px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      /* 'MarketPulse' logo styles */
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+      
+      /* 'Create Account' (header) styles and layout */
+      h1 {
+        margin: 0 0;
+        font-size: 24px;
+        color: #111;
+        font-weight: 700;
+        padding-left: 40px;
+        margin-bottom: 24px;
+      }
+
+      /* Page container */
+      .container {
+        display: flex;
+        flex-direction: column;
+        margin-left: 90px;
+        margin-right: 90px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      /* Fields Titles */
+      label {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+
+      /* Input styles */
+      input {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid #e5e5e5;
+        font-size: 15px;
+      }
+
+      /* Container for action buttons */
+      .actions {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        gap: 100px;
+        margin-top: 32px;
+      }
+
+      /* Main action buttons (Save/Cancel) */
+      .btn-row {
+        width: 170px; 
+        height: 80px; 
+        border: none;
+        border-radius: 30px;
+        padding: 0 24px;
+        background: #e21b1b;
+        color: #ffffff;
+        font-size: 30px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+        overflow: hidden;
+        text-decoration: none;
+      }
+
+      /* Button hover/lift effect */
+      .btn-row:hover {
+        transform: translateY(-6px);
+      }
+
+      /* Success message styles */
+      .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header Section -->   
+      <header>
+        <div class="logo">MarketPulse</div>
+      </header>
+
+      <header>
+        <h1>Create Account</h1>
+      </header>
+      <!-- End Header -->  
+
+      <main class="container">
+        
+      <!-- Success message -->
+      {% if success %}
+      <div class="success-message">{{ success }}</div>
+      {% endif %}
+
+      <form id="createAccountForm" method="POST" action="/register" novalidate>
+        <div>
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="first_name" autocomplete="given-name" />
+        </div>
+        <div>
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="last_name" autocomplete="family-name" />
+        </div>
+        <div>
+          <label for="phoneNumber">Phone Number</label>
+          <input type="tel" id="phoneNumber" name="phone" autocomplete="tel" />
+        </div>
+        <div>
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" />
+        </div>
+        <div>
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirm_password" autocomplete="new-password" />
+        </div>
+        <div class="actions">
+          <a class="btn-row" href="/login">Cancel</a>
+          <button class="btn-row" type="submit">Save</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

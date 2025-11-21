@@ -1,0 +1,150 @@
+<!--
+    Delete Account confirmation page template, displaying a warning message and 
+    allowing users to confirm account deletion or cancel the action.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Delete Account • MarketPulse</title>
+    <style>
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Body styles */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      /* Page container */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Main Header content layout */
+      header {
+        width: 100%;
+        padding: 32px 48px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      /* 'MarketPulse' logo styles */
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      /* Main content area */
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Warning Banner layout */
+      .banner {
+        background: #e21b1b;
+        padding: 56px 24px 150px;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      /* Warning icon styles */
+      .banner svg {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 24px;
+        fill: #fff;
+      }
+
+      /* Confirmation message (header) */
+      h1 {
+        font-size: 38px;
+        font-weight: 700;
+      }
+
+      /* Action buttons container */
+      .actions {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        gap: 250px;
+        padding: 48px 24px 80px;
+      }
+
+      /* Base button styles */
+      .btn {
+        width: 200px;
+        height: 80px;
+        border: none;
+        border-radius: 10px;
+        padding: 24px 24px;
+        font-size: 30px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        overflow: hidden;
+        text-decoration:none;
+        display: flex;
+      }
+
+      /* Cancel button styles */
+      .btn-secondary {
+        background: #e2e2e2;
+        color: #000000;
+        border: 1px solid #000000;
+      }
+
+      /* Delete button styles */
+      .btn-primary {
+        background: #e21b1b;
+        color: #fff;
+        border: 1px solid #000000;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Page Container -->
+    <div class="page">
+        <!-- Header Section -->
+        <header>
+            <div class="logo">MarketPulse</div>
+        </header>
+        <!-- End Header -->
+        
+    <!-- Main Content Area -->
+    <main>    
+        <!-- Warning banner Section -->
+        <div class="banner">
+         <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M450-398.46v-340h60v340h-60Zm0 176.92v-60h60v60h-60Z"/></svg>
+          <h1>Are you sure you want to delete your account?</h1>
+        </div>
+
+        <!-- Action Buttons Section -->
+        <div class="actions">
+          <a class="btn btn-secondary" href="/settings">Cancel</a>
+      
+          <form method="post" action="/delete-account">
+           <button class="btn btn-primary" type="submit">Delete</button>
+          </form>
+    </main>
+    <!-- End Main Content -->
+    </div>
+  </body>
+</html>

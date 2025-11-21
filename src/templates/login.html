@@ -1,0 +1,230 @@
+<!--
+    Login page template, allowing users to sign in or create a new account.
+-->
+    
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MarketPulse - Login</title>
+    <style>
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Body styles */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      /* Page container */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Main content area */
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Banner layout */
+      .banner {
+        background: #e21b1b;
+        padding: 56px 24px 150px;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      /* Page title */
+      h1 {
+        font-size: 48px;
+        font-weight: 700;
+      }
+
+      /* Form container */
+      .form-section {
+        display: flex;
+        justify-content: center;
+        padding: 48px 24px 80px;
+      }
+
+      input[type=text], 
+      input[type=password] {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #d0d5dd;
+        margin-top: 8px;
+        font-size: 15px;
+      }
+
+      input.error-field {
+        border-color: #e21b1b;
+        background-color: #fff5f5;
+      }
+
+      .error {
+        color: #e21b1b;
+        margin-top: 8px;
+        font-size: 14px;
+        display: none;
+      }
+
+      .error.show {
+        display: block;
+      }
+
+      /* Action buttons container */
+      .actions {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        gap: 100px;
+        margin-top: 32px;
+      }
+
+      /* Base button styles */
+      .btn {
+        width: 190px;
+        height: 60px;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      /* Sign in button styles */
+      .btn-primary {
+        background: #e21b1b;
+        color: #fff;
+        border: 1px solid #000000;
+      }
+
+      /* Create account button styles */
+      .btn-secondary {
+        background: #e2e2e2;
+        color: #000000;
+        border: 1px solid #000000;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Page Container -->
+    <div class="page">
+      <!-- Main Content Area -->
+      <main>    
+        <!-- Banner Section -->
+        <div class="banner">
+         <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"></svg>
+          <h1>MarketPulse</h1>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+          <div class="form-card">
+            <form method="post" action="/login" id="loginForm">
+              <label for="username">Username</label>
+              <input id="username" name="username" type="text" />
+              <div class="error" id="usernameError">Field is empty</div>
+
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" />
+              <div class="error" id="passwordError">Field is empty</div>
+              
+              <div class="error" id="loginError"></div>
+
+              <div class="actions">
+                <button class="btn btn-primary" type="submit">Sign in</button>
+                <a class="btn btn-secondary" href="/create-account">Create Account</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+      <!-- End Main Content -->
+    </div>
+
+    <script>
+    // EventListener for the login form submission
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+
+        let isValid = true;
+
+        // Reset errors
+        loginError.classList.remove('show');
+        username.classList.remove('error-field');
+        password.classList.remove('error-field');
+
+        // Check if fields are empty/add error styles
+        if (!username.value.trim() || !password.value.trim()) {
+            if (!username.value.trim()) username.classList.add('error-field');
+            if (!password.value.trim()) password.classList.add('error-field');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // send login request
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: username.value.trim(),
+                password: password.value.trim()
+            })
+        });
+
+        // parse JSON
+        const data = await response.json();
+        
+        // Redirect to dashboard if login is successful
+        if (data.success) {
+            window.location.href = "/dashboard";
+            return;
+        }
+
+        // If login fails, show error, turn fields red, and clear input
+        loginError.textContent = "Account not found";
+        loginError.classList.add('show');
+        username.classList.add('error-field');
+        password.classList.add('error-field');
+        username.value = "";
+        password.value = "";
+    });
+
+    // Clear errors on typing
+    function clearLoginErrors() {
+        document.getElementById('loginError').classList.remove('show');
+        document.getElementById('username').classList.remove('error-field');
+        document.getElementById('password').classList.remove('error-field');
+    }
+
+    // EventListeners to clear errors when typing
+    document.getElementById('username').addEventListener('input', clearLoginErrors);
+    document.getElementById('password').addEventListener('input', clearLoginErrors);
+    </script>
+
+  </body>
+</html>

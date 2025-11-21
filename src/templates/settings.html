@@ -1,0 +1,186 @@
+<!--
+    Settings page template, providing users with options to manage their account including
+    logout, account information editing, and account deletion.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MarketPulse Settings</title>
+    <style>
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Body styles */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      /* Page container */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Main Header content layout */
+      header {
+        width: 100%;
+        padding: 32px 48px 1px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      /* 'MarketPulse' logo styles */
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      /* 'Home Page' (logo/link) layout */
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        color: #111;
+        text-decoration: none;  /* Remove underline */
+        font-size: 20px;
+      }
+
+      /* 'Home Page' house icon styles */
+      .home-link svg {
+        width: 25px;
+        height: 25px;
+        stroke: #ff0000;
+        fill: #ff0000;
+        stroke-width: 1.0;
+      }
+
+      /* Main content area */
+      main {
+        flex: 1;
+        padding: 0 48px 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* 'Settings' (header) styles and layout */
+      h1 {
+        margin: 0 0;
+        font-size: 32px;
+        color: #111;
+        font-weight: 700;
+        padding-left: 70px;
+      }
+
+      /* Container for action buttons */
+      .settings-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        align-items: center;
+        padding: 20px 0;
+      }
+
+      /* Action button styles and layout */
+      .btn-row {
+        width: 870px;
+        height: 80px;
+        border: none;
+        border-radius: 30px;
+        padding: 0 24px;
+        background: #e21b1b;
+        color: #ffffff;
+        font-size: 40px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+        overflow: hidden;
+        text-decoration:none;
+      }
+
+      /* Button hover/lift effect */
+      .btn-row:hover {
+        transform: translateY(-6px);
+      }
+
+      /* Action button icon styles */
+      .btn-row svg {
+        width: 40px;
+        height: 40px;
+        fill: #fff;
+        flex-shrink: 0;
+    }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Page Container -->
+    <div class="page">
+        <!-- Header Section -->
+        <header>
+            <div class="logo">MarketPulse</div>
+            
+            <a class="home-link" href="{{ url_for('dashboard') }}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2">
+                    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8 M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                Home Page
+            </a>
+        </header>
+
+        <header>
+            <h1>Settings</h1>
+        </header>
+        <!-- End Header -->
+
+      <!-- Main Content Area -->
+      <main>
+        <div class="settings-actions">
+            
+          <form method="post" action="/logout">
+            <input type="hidden" name="username" value="{{ username or '' }}" />
+            <button class="btn-row" type="submit">
+              Logout
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M13 3a1 1 0 0 1 1 1v3h-2V5H5v14h7v-2h2v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h9Zm4.293 5.293 4 4a1 1 0 0 1 0 1.414l-4 4L16.586 16 18.17 14H11v-2h7.17l-1.585-2 1.708-1.707Z" />
+              </svg>
+            </button>
+          </form>
+
+          <a class="btn-row" href="/account-information">
+            Edit Account
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.707 4.293a1 1 0 0 1 0 1.414l-2.121 2.121-3.293-3.293 2.121-2.121a1 1 0 0 1 1.414 0l1.879 1.879ZM15.586 6.414 4 18v3h3L18.586 9.414l-3-3Z" />
+            </svg>
+          </a>
+
+          <a class="btn-row" href="/delete-account">
+            Delete Account
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 3a1 1 0 0 1 1 1v1h4a1 1 0 1 1 0 2h-1v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7H5a1 1 0 1 1 0-2h4V4a1 1 0 0 1 1-1h4Zm2 4H8v11h8V7Zm-6 2a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V10a1 1 0 0 1 1-1Zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V10a1 1 0 0 1 1-1Z" />
+            </svg>
+          </a>
+        </div>
+      </main>
+      <!-- End Main Content -->
+    </div>
+  </body>
+</html>
