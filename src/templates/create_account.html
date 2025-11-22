@@ -1,3 +1,7 @@
+<!--
+    Account creation template page creates an 'Create Account' form* with input fields for user info.
+-->
+    
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,23 +10,24 @@
     <title>MarketPulse - Create Account</title>
     <style>
 
+      /* Global styles */
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
 
-      /* Body styles */
+      /* Body styles for entire page */
       body {
         font-family: "Segoe UI", Arial, sans-serif;
         background: #ffffff;
         color: #000000;
       }
 
-      /* Main Header content layout */
+      /* Header Container (For logo and home link) */
       header {
         width: 100%;
-        padding: 32px 48px 50px;
+        padding: 32px 48px 1px;
         display: flex;
         justify-content: space-between;
         align-items: center; 
@@ -45,7 +50,15 @@
         margin-bottom: 24px;
       }
 
-      /* Page container */
+      /* Header buttons container */
+      .header-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: center;
+      }
+
+      /* Main container (form content) */
       .container {
         display: flex;
         flex-direction: column;
@@ -53,20 +66,21 @@
         margin-right: 90px;
       }
 
+      /* Form layout (vertical stacking of fields)*/
       form {
         display: flex;
         flex-direction: column;
         gap: 18px;
       }
 
-      /* Fields Titles */
+      /* Form field labels */
       label {
         font-weight: 600;
         font-size: 15px;
         margin-bottom: 6px;
       }
 
-      /* Input styles */
+      /* Input fields styles */
       input {
         width: 100%;
         padding: 14px 16px;
@@ -75,25 +89,45 @@
         font-size: 15px;
       }
 
-      /* Container for action buttons */
-      .actions {
+      /* Password field container */
+      .password-field-container {
         display: flex;
-        justify-content: center;
-        flex-direction: row;
-        gap: 100px;
-        margin-top: 32px;
+        flex-direction: column;
       }
 
-      /* Main action buttons (Save/Cancel) */
+      /* Password toggle styles and layout */
+      .password-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      /* Toggle checkbox (behavior) */
+      .password-toggle input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      /* Toggle label styles */
+      .password-toggle label {
+        margin: 0;
+        font-weight: 400;
+        cursor: pointer;
+      }
+
+      /* Main action buttons (Save/Cancel) styles*/
       .btn-row {
-        width: 170px; 
-        height: 80px; 
+        width: 120px; 
+        height: 50px; 
         border: none;
-        border-radius: 30px;
+        border-radius: 20px;
         padding: 0 24px;
         background: #e21b1b;
         color: #ffffff;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: 700;
         display: flex;
         justify-content: center;
@@ -110,7 +144,7 @@
         transform: translateY(-6px);
       }
 
-      /* Success message styles */
+      /* All message styles */
       .success-message {
         background-color: #d4edda;
         color: #155724;
@@ -121,6 +155,15 @@
         font-weight: 600;
         text-align: center;
       }
+
+      /* Required '*' Marker */
+      .required {
+        color: #ff4d4f;
+        margin-left: 2px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
     </style>
   </head>
 
@@ -132,17 +175,32 @@
 
       <header>
         <h1>Create Account</h1>
+        <!-- Action Buttons -->  
+        <div class="header-actions">
+          <a class="btn-row" href="{{ url_for('login_get') }}">Cancel</a>
+          <button type="submit" form="createAccountForm" class="btn-row">Save</button>
+        </div>
+        <!-- End Action Buttons -->  
       </header>
       <!-- End Header -->  
 
+      <!-- Main Container  -->  
       <main class="container">
         
-      <!-- Success message -->
-      {% if success %}
-      <div class="success-message">{{ success }}</div>
+      <!-- Error/Confirmation Messages -->  
+      {% if error %}
+        <div style="background:#fff5f5;border:1px solid #d92a2a;color:#d92a2a;padding:14px 18px;border-radius:10px;margin-bottom:18px;">
+          {{ error }}
+        </div>
+      {% elif success %}
+        <div style="background:#f0fff4;border:1px solid #23a55a;color:#1e7a45;padding:14px 18px;border-radius:10px;margin-bottom:18px;">
+          {{ success }}
+        </div>
       {% endif %}
-
-      <form id="createAccountForm" method="POST" action="/register" novalidate>
+      <!-- End Error/Confirmation Messages -->  
+      
+      <!-- Form Fields -->  
+      <form id="createAccountForm" method="POST" action="/register">
         <div>
           <label for="firstName">First Name</label>
           <input type="text" id="firstName" name="first_name" autocomplete="given-name" />
@@ -156,26 +214,47 @@
           <input type="tel" id="phoneNumber" name="phone" autocomplete="tel" />
         </div>
         <div>
-          <label for="username">Username</label>
+          <label for="username">Username <span class="required">*</span></label>
           <input type="text" id="username" name="username" autocomplete="username" />
         </div>
         <div>
           <label for="email">Email</label>
           <input type="email" id="email" name="email" autocomplete="email" />
         </div>
-        <div>
-          <label for="password">Password</label>
+        <div class="password-field-container">
+          <label for="password">Password<span class="required">*</span></label>
           <input type="password" id="password" name="password" autocomplete="new-password" />
+          <div class="password-toggle">
+            <input type="checkbox" id="togglePassword" onchange="togglePasswordVisibility('password', 'togglePassword')" />
+            <label for="togglePassword">Show password</label>
+          </div>
         </div>
-        <div>
-          <label for="confirmPassword">Confirm Password</label>
+        <div class="password-field-container">
+          <label for="confirmPassword">Confirm Password<span class="required">*</span></label>
           <input type="password" id="confirmPassword" name="confirm_password" autocomplete="new-password" />
-        </div>
-        <div class="actions">
-          <a class="btn-row" href="/login">Cancel</a>
-          <button class="btn-row" type="submit">Save</button>
+          <div class="password-toggle">
+            <input type="checkbox" id="toggleConfirmPassword" onchange="togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword')" />
+            <label for="toggleConfirmPassword">Show password</label>
+          </div>
         </div>
       </form>
+      <!-- End Form Fields -->
     </main>
+    <!-- End Main Container -->  
+
+    <!-- Password visibility toggle function -->  
+    <script>
+      function togglePasswordVisibility(passwordFieldId, checkboxId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const checkbox = document.getElementById(checkboxId);
+        
+        if (checkbox.checked) {
+          passwordField.type = 'text';
+        } else {
+          passwordField.type = 'password';
+        }
+      }
+    </script>
+    <!-- End Password visibility toggle function -->  
   </body>
 </html>

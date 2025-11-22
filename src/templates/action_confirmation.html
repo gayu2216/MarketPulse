@@ -1,173 +1,128 @@
+<!-- 
+    Action Confirmation Template that is used to display success/confirmation messages after user actions
+    Elements required:
+    - title: Main heading of the confirmation
+    - message: Detailed confirmation message
+    - button_text: Text for the action button
+    - next_url: URL for the button to navigate to
+-->
+  
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MarketPulse - Create Account</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title }} - MarketPulse</title>
     <style>
+
+      /* Global styles */
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
 
+      /* Body styles for entire page */
       body {
-        font-family: "Segoe UI", Arial, sans-serif;
+        font-family: "Segoe UI", Arial, sans-serif;        
         background: #ffffff;
-        color: #000000;
-      }
-
-      header {
-        width: 100%;
-        padding: 32px 48px 50px;
+        color: #e02121;
+        min-height: 100vh;
         display: flex;
-        justify-content: space-between;
-        align-items: center; 
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
       }
 
+      /* Page container */
+      .page {
+        max-width: 480px;
+        padding: 40px 32px;
+        text-align: center;
+      }      
+      
+      /* 'MarketPulse' logo styles */
       .logo {
+        position: absolute;
+        top: 32px;
+        left: 48px;
         font-size: 32px;
         font-weight: 700;
-        color: #e21b1b;
+        color: #e02121;
       }
 
-      h1 {
-        margin: 0 0;
-        font-size: 24px;
-        color: #111;
-        font-weight: 700;
-        padding-left: 40px;
-        margin-bottom: 24px;
-      }
-
-      .container {
+      /* Circular icon container */
+      .icon {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: #e02121;
         display: flex;
-        flex-direction: column;
-        margin-left: 90px;
-        margin-right: 90px;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
-      label {
-        font-weight: 600;
-        font-size: 15px;
-        margin-bottom: 6px;
-      }
-
-      input {
-        width: 100%;
-        padding: 14px 16px;
-        border-radius: 10px;
-        border: 1px solid #e5e5e5;
-        font-size: 15px;
-      }
-
-      .actions {
-        display: flex;
-        justify-content: center;
-        flex-direction: row;
-        gap: 100px;
-        margin-top: 32px;
-      }
-
-      .btn-row {
-        width: 170px; 
-        height: 80px; 
-        border: none;
-        border-radius: 30px;
-        padding: 0 24px;
-        background: #e21b1b;
-        color: #ffffff;
-        font-size: 30px;
-        font-weight: 700;
-        display: flex;
-        justify-content: center;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      /* Icon styling */
+      .icon svg {
+        width: 70px;
+        height: 70px;
+        fill: #ffffff;
+      }
+
+      /* Header for confirmation message */
+      h1 {
+        font-size: 28px;
+        margin: 0 0 16px;
+        color: #111;
+      }
+
+      /* Details for confirmation message */
+      p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0 0 32px;
+        color: #333;
+      }
+
+      /* Action button styles and layout */
+      .btn {
+        border: none;
+        border-radius: 6px;
+        padding: 12px 28px;
+        background: #e02121;
+        color: #ffffff;       
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;       
         cursor: pointer;
-        transition: transform 0.15s ease;
+        transition: background 0.2s ease;
         overflow: hidden;
-        text-decoration: none;
+        text-decoration:none;
       }
-
-      .btn-row:hover {
-        transform: translateY(-6px);
+      
+      /* Button darkened color effect */
+      .btn:hover {
+        background: #b81f1f;
       }
-
-      .success-message {
-        color: green;
-        font-weight: bold;
-        margin-bottom: 16px;
-      }
-
-      .error-message {
-        color: red;
-        font-weight: bold;
-        margin-bottom: 16px;
-      }
-
     </style>
   </head>
 
   <body>
-    <header>
-      <div class="logo">MarketPulse</div>
-    </header>
-
-    <header>
-      <h1>Create Account</h1>
-    </header>
-
-    <main class="container">
-
-      {% if error %}
-      <div class="error-message">{{ error }}</div>
-      {% endif %}
-
-      {% if success %}
-      <div class="success-message">{{ success }}</div>
-      {% endif %}
-
-      <form id="createAccountForm" action="{{ url_for('register') }}" method="POST" novalidate>
-        <div>
-          <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="first_name" autocomplete="given-name" value="{{ first_name|default('') }}" />
-        </div>
-        <div>
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="last_name" autocomplete="family-name" value="{{ last_name|default('') }}" />
-        </div>
-        <div>
-          <label for="phoneNumber">Phone Number</label>
-          <input type="tel" id="phoneNumber" name="phone" autocomplete="tel" value="{{ phone|default('') }}" />
-        </div>
-        <div>
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" autocomplete="username" value="{{ username|default('') }}" />
-        </div>
-        <div>
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" autocomplete="email" value="{{ email|default('') }}" />
-        </div>
-        <div>
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" />
-        </div>
-        <div>
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" name="confirm_password" autocomplete="new-password" />
-        </div>
-
-        <div class="actions">
-          <a class="btn-row" href="{{ url_for('login_get') }}">Cancel</a>
-          <button class="btn-row" type="submit">Save</button>
-        </div>
-      </form>
-    </main>
+    <div class="logo">MarketPulse</div>
+    
+    <div class="page">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5Z" />
+        </svg>
+      </div>
+      <h1>{{ title }}</h1>
+      <p>{{ message }}</p>
+      <a href="{{ next_url }}" class="btn">{{ button_text }}</a>
+    </div>
   </body>
 </html>

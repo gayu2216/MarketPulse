@@ -8,23 +8,38 @@ from src.controllers.sales_data_controller import SalesDataController
 
 
 def create_app(test_config=None):
+    # Create and configure the Flask app
     app = Flask(__name__)
+
     ###
-    app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret") 
+    app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret-12345")
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600
+    ###
+
+    # Initialize controllers
     account_ctrl = AccountController()
     registration_ctrl = RegistrationController(account_ctrl)
     sales_data_ctrl = SalesDataController()
-    ###
 
+    def require_login():
+        username = session.get("username")
+        if not username or not account_ctrl.is_authenticated(username):
+            return None
+        return username
+
+    # ROUTES HANDLERS
+
+    # Home route redirects to dashboard
     @app.route("/", methods=["GET"])
     def index():
         return redirect(url_for('dashboard'))
 
+    # Register route (GET (get form) and POST (submit form))
     @app.route("/register", methods=["GET", "POST"])
     def register():
         if request.method == "GET":
             return render_template("create_account.html")
-
         if request.is_json:
             data = request.get_json(force=True) or {}
             reg_data = RegistrationData(
@@ -55,67 +70,67 @@ def create_app(test_config=None):
 
         try:
             registration_ctrl.register(reg_data)
+            # Show success message on the same page
             return render_template(
-                "action_confirmation.html",
-                title="Account Successfully Created",
-                message="Your account has been created successfully. You can now log in with your credentials.",
-                button_text="Go to Login",
-                button_url=url_for("login"),
+                "create_account.html",
+                success="Your account has been created successfully! You can now log in with your credentials.",
             )
         except Exception as exc:
             error_msg = str(exc)
-            field_map = {
-                "first_name": ["first name", "first_name"],
-                "last_name": ["last name", "last_name"],
-                "phone": ["phone number", "phone"],
-                "username": ["username", "username"],
-                "email": ["email address", "email"],
-                "password": ["password", "password"],
-                "confirm_password": ["password confirmation", "confirm_password"],
-            }
-
-            field_errors = {}
-            for field, names in field_map.items():
-                for name in names:
-                    if name.lower() in error_msg.lower():
-                        field_errors[field] = error_msg
-                        break
-
-            return (
-                render_template(
-                    "create_account.html",
-                    error=error_msg,
-                    errors=field_errors,
-                    first_name=reg_data.first_name,
-                    last_name=reg_data.last_name,
-                    phone=reg_data.phone or "",
-                    username=reg_data.username,
-                    email=reg_data.email,
-                ),
-                400,
+            # For form submissions, return the form with error messages
+            return render_template(
+                "create_account.html",
+                error=error_msg,
+                first_name=reg_data.first_name,
+                last_name=reg_data.last_name,
+                phone=reg_data.phone or "",
+                username=reg_data.username,
+                email=reg_data.email,
             )
 
+    # Login route (GET (get login form))
     @app.route("/login", methods=["GET"])
     def login_get():
         return render_template("login.html")
 
+    # Login route (POST (process login submission))
+    @app.route("/login", methods=["POST"])
+    def login_post():
+        if request.is_json:
+            data = request.get_json(force=True)
+            username = data.get("username")
+            password = data.get("password")
+            try:
+                ok = account_ctrl.login(username, password)
+                if ok:
+                    session["username"] = username
+                return jsonify({"success": ok}), 200
+            except Exception as exc:
+                return jsonify({"success": False, "error": str(exc)}), 400
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+        try:
+            account_ctrl.login(username, password)
+            session["username"] = username
+            return redirect(url_for("dashboard"))
+        except Exception as exc:
+            return render_template("login.html", error=str(exc)), 400
+
+    # Create Account route (GET register redirect)
     @app.route("/create-account", methods=["GET"])
     def create_account_get():
         return redirect(url_for('register'))
 
-    def require_login():
-        username = session.get("username")
-        if not username or not account_ctrl.is_authenticated(username):
-            return None
-        return username
-
+    # Dashboard route
     @app.route("/dashboard", methods=["GET"])
     def dashboard():
         username = require_login()
         if not username:
             return redirect(url_for("login_get"))
         return render_template("dashboard.html", username=username)
-
+    
+    # Settings route
     @app.route("/settings", methods=["GET"])
     def settings():
         username = require_login()
@@ -126,36 +141,7 @@ def create_app(test_config=None):
             return redirect(url_for("login_get"))
         return render_template("settings.html", username=username, user=user.to_dict() if hasattr(user, 'to_dict') else None)
 
-    @app.route("/delete-account", methods=["GET"])
-    def delete_account_get():
-        username = require_login()
-        if not username:
-            return redirect(url_for("login_get"))
-        return render_template("delete_verification.html")
-
-    @app.route("/delete-account", methods=["POST"])
-    def delete_account_post():
-        username = require_login()
-        if not username:
-            if request.is_json:
-                return jsonify({"success": False, "error": "Not authenticated"}), 401
-            return redirect(url_for("login_get"))
-
-        account_ctrl.delete_user(username)
-        account_ctrl.logout(username)
-        session.pop("username", None)
-
-        if request.is_json:
-            return jsonify({"success": True}), 200
-
-        return render_template(
-            "action_confirmation.html",
-            title="Account Deleted Successfully",
-            message="Your account has been permanently deleted. We're sorry to see you go!",
-            button_text="Return to Home",
-            next_url=url_for("index")
-        )
-
+    # Account information route (GET (gets form))
     @app.route("/account-information", methods=["GET"])
     def account_information():
         username = require_login()
@@ -163,7 +149,8 @@ def create_app(test_config=None):
             return redirect(url_for("login_get"))
         user = account_ctrl.get_user(username)
         return render_template("account_information.html", user=user, username=username)
-
+    
+    # Account information route (POST (processes form submission))
     @app.route("/account-information", methods=["POST"])
     def account_information_post():
         username = require_login()
@@ -201,15 +188,18 @@ def create_app(test_config=None):
                 ),
                 400,
             )
-
+        
+    # Logout route (POST)
     @app.route("/logout", methods=["POST"])
     def logout_post():
-        username = request.form.get("username") or request.json.get("username") if request.is_json else None
+        username = session.get("username") or request.form.get("username") or (request.json.get("username") if request.is_json else None)
         if not username and "username" in request.cookies:
             username = request.cookies.get("username")
 
         if username:
             account_ctrl.logout(username)
+        
+        session.pop("username", None)
 
         if request.is_json:
             return jsonify({"success": True}), 200
@@ -222,28 +212,37 @@ def create_app(test_config=None):
             next_url=url_for("login_get")
         )
 
-    @app.route("/login", methods=["POST"])
-    def login_post():
-        if request.is_json:
-            data = request.get_json(force=True)
-            username = data.get("username")
-            password = data.get("password")
-            try:
-                ok = account_ctrl.login(username, password)
-                if ok:
-                    session["username"] = username
-                return jsonify({"success": ok}), 200
-            except Exception as exc:
-                return jsonify({"success": False, "error": str(exc)}), 400
+    # Delete Account route (GET (verification page))
+    @app.route("/delete-account", methods=["GET"])
+    def delete_account_get():
+        username = require_login()
+        if not username:
+            return redirect(url_for("login_get"))
+        return render_template("delete_verification.html")
+    
+    # Delete Account route (POST (processes deletion))
+    @app.route("/delete-account", methods=["POST"])
+    def delete_account_post():
+        username = require_login()
+        if not username:
+            if request.is_json:
+                return jsonify({"success": False, "error": "Not authenticated"}), 401
+            return redirect(url_for("login_get"))
 
-        username = request.form.get("username")
-        password = request.form.get("password")
-        try:
-            account_ctrl.login(username, password)
-            session["username"] = username
-            return redirect(url_for("dashboard"))
-        except Exception as exc:
-            return render_template("login.html", error=str(exc)), 400
+        account_ctrl.delete_user(username)
+        account_ctrl.logout(username)
+        session.pop("username", None)
+
+        if request.is_json:
+            return jsonify({"success": True}), 200
+
+        return render_template(
+            "action_confirmation.html",
+            title="Account Deleted Successfully",
+            message="Your account has been permanently deleted. We're sorry to see you go!",
+            button_text="Return to Home",
+            next_url=url_for("index")
+        )
 
     @app.route("/upload", methods=["GET", "POST"])
     def upload():
