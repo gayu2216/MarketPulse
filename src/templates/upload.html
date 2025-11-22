@@ -1,0 +1,211 @@
+<!--
+  Upload page template for uploading sales data CSV files.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MarketPulse - Upload Sales Data</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        width: 100%;
+        padding: 32px 48px 1px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        color: #111;
+        text-decoration: none;
+        font-size: 20px;
+      }
+
+      .home-link svg {
+        width: 25px;
+        height: 25px;
+        stroke: #ff0000;
+        fill: #ff0000;
+        stroke-width: 1.0;
+      }
+
+      main {
+        flex: 1;
+        padding: 40px 48px 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      h1 {
+        margin: 0 0 40px;
+        font-size: 32px;
+        color: #111;
+        font-weight: 700;
+      }
+
+      .upload-container {
+        background: #f9f9f9;
+        border: 2px dashed #e21b1b;
+        border-radius: 20px;
+        padding: 60px 40px;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: center;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .file-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .file-input:focus {
+        outline: none;
+        border-color: #e21b1b;
+      }
+
+      .btn-submit {
+        width: 200px;
+        height: 60px;
+        border: none;
+        border-radius: 30px;
+        background: #e21b1b;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-4px);
+      }
+
+      .btn-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .error {
+        color: #e21b1b;
+        font-size: 16px;
+        margin-top: 20px;
+        padding: 15px;
+        background: #ffe6e6;
+        border-radius: 10px;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .success {
+        color: #28a745;
+        font-size: 16px;
+        margin-top: 20px;
+        padding: 15px;
+        background: #e6ffe6;
+        border-radius: 10px;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .info-text {
+        color: #666;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header>
+        <div class="logo">MarketPulse</div>
+        <a class="home-link" href="{{ url_for('dashboard') }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2">
+            <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8 M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          Home Page
+        </a>
+      </header>
+
+      <main>
+        <h1>Upload Sales Data</h1>
+        
+        <div class="upload-container">
+          <form class="upload-form" method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                name="file" 
+                class="file-input" 
+                accept=".csv"
+                required
+              />
+              <p class="info-text">Please select a CSV file containing sales data</p>
+            </div>
+            
+            <button type="submit" class="btn-submit">Upload</button>
+          </form>
+        </div>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>
+

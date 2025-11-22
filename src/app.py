@@ -4,6 +4,7 @@ import os
 
 from src.controllers.account_controller import AccountController
 from src.controllers.registration_controller import RegistrationController, RegistrationData
+from src.controllers.sales_data_controller import SalesDataController
 
 
 def create_app(test_config=None):
@@ -12,6 +13,7 @@ def create_app(test_config=None):
     app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret") 
     account_ctrl = AccountController()
     registration_ctrl = RegistrationController(account_ctrl)
+    sales_data_ctrl = SalesDataController()
     ###
 
     @app.route("/", methods=["GET"])
@@ -242,6 +244,67 @@ def create_app(test_config=None):
             return redirect(url_for("dashboard"))
         except Exception as exc:
             return render_template("login.html", error=str(exc)), 400
+
+    @app.route("/upload", methods=["GET", "POST"])
+    def upload():
+        username = require_login()
+        if not username:
+            return redirect(url_for("login_get"))
+
+        if request.method == "GET":
+            return render_template("upload.html", username=username)
+
+        # POST request
+        if 'file' not in request.files:
+            return render_template("upload.html", username=username, error="No file provided"), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return render_template("upload.html", username=username, error="No file selected"), 400
+
+        try:
+            file_path = sales_data_ctrl.save_uploaded_file(file, username)
+            # Process the file immediately and store results in session
+            sales_data = sales_data_ctrl.process_sales_data(file_path, username)
+            if sales_data.get('success'):
+                session['sales_data'] = sales_data
+                return render_template("upload.html", username=username, success="File uploaded and processed successfully! You can now view the sales data."), 200
+            else:
+                return render_template("upload.html", username=username, error=f"Error processing file: {sales_data.get('error', 'Unknown error')}"), 400
+        except Exception as exc:
+            return render_template("upload.html", username=username, error=str(exc)), 400
+
+    @app.route("/view-sales", methods=["GET"])
+    def view_sales():
+        username = require_login()
+        if not username:
+            return redirect(url_for("login_get"))
+
+        # Try to get sales data from session first
+        sales_data = session.get('sales_data')
+        
+        # If no data in session, try to process the most recent uploaded file
+        if not sales_data:
+            user_files = sales_data_ctrl.get_user_uploaded_files(username)
+            if user_files:
+                # Process the most recent file
+                latest_file = max(user_files, key=lambda x: x['path'])
+                sales_data = sales_data_ctrl.process_sales_data(latest_file['path'], username)
+                if sales_data.get('success'):
+                    session['sales_data'] = sales_data
+                else:
+                    return render_template("view_sales.html", username=username, error=sales_data.get('error', 'Error processing sales data')), 400
+            else:
+                return render_template("view_sales.html", username=username, error="No sales data found. Please upload a CSV file first."), 200
+
+        return render_template("view_sales.html", username=username, sales_data=sales_data if sales_data.get('success') else None, error=sales_data.get('error') if not sales_data.get('success') else None)
+
+    @app.route("/graphs/<path:filename>")
+    def serve_graph(filename):
+        """Serve graph images."""
+        from flask import send_from_directory
+        graphs_path = sales_data_ctrl.graphs_folder
+        return send_from_directory(str(graphs_path), filename)
 
     return app
 

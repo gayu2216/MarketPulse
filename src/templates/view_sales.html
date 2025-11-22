@@ -1,0 +1,394 @@
+<!--
+  View Sales page template for displaying sales data summaries and forecasts.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MarketPulse - View Sales Data</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        width: 100%;
+        padding: 32px 48px 1px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+      }
+
+      .logo {
+        font-size: 32px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        color: #111;
+        text-decoration: none;
+        font-size: 20px;
+      }
+
+      .home-link svg {
+        width: 25px;
+        height: 25px;
+        stroke: #ff0000;
+        fill: #ff0000;
+        stroke-width: 1.0;
+      }
+
+      main {
+        flex: 1;
+        padding: 40px 48px 64px;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      h1 {
+        margin: 0 0 30px;
+        font-size: 32px;
+        color: #111;
+        font-weight: 700;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .stat-card {
+        background: #f9f9f9;
+        border: 2px solid #e21b1b;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #e21b1b;
+      }
+
+      .section {
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e21b1b;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #e21b1b;
+        color: #ffffff;
+        padding: 12px;
+        text-align: left;
+        font-weight: 700;
+      }
+
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:hover {
+        background: #f0f0f0;
+      }
+
+      .error {
+        color: #e21b1b;
+        font-size: 16px;
+        padding: 20px;
+        background: #ffe6e6;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-size: 18px;
+      }
+
+      .btn-upload {
+        display: inline-block;
+        padding: 15px 30px;
+        background: #e21b1b;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 30px;
+        transition: transform 0.15s ease;
+      }
+
+      .btn-upload:hover {
+        transform: translateY(-4px);
+      }
+
+      .graph-container {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .graph-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .graphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      .graph-wrapper {
+        background: #ffffff;
+        border: 2px solid #e21b1b;
+        border-radius: 15px;
+        padding: 20px;
+      }
+
+      .graph-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header>
+        <div class="logo">MarketPulse</div>
+        <a class="home-link" href="{{ url_for('dashboard') }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2">
+            <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8 M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          Home Page
+        </a>
+      </header>
+
+      <main>
+        <h1>Sales Data Analysis</h1>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        <a href="{{ url_for('upload') }}" class="btn-upload">Upload Sales Data</a>
+        {% elif not sales_data %}
+        <div class="no-data">
+          <p>No sales data available. Please upload a CSV file to view sales analysis.</p>
+          <a href="{{ url_for('upload') }}" class="btn-upload">Upload Sales Data</a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('upload') }}" class="btn-upload">Upload New Sales Data</a>
+
+        {% if sales_data.statistics %}
+        <div class="section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Sales</div>
+              <div class="stat-value">${{ "%.2f"|format(sales_data.statistics.total_sales) }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Average Daily Sales</div>
+              <div class="stat-value">${{ "%.2f"|format(sales_data.statistics.avg_daily_sales) }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Maximum Daily Sales</div>
+              <div class="stat-value">${{ "%.2f"|format(sales_data.statistics.max_daily_sales) }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Minimum Daily Sales</div>
+              <div class="stat-value">${{ "%.2f"|format(sales_data.statistics.min_daily_sales) }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Days</div>
+              <div class="stat-value">{{ sales_data.statistics.total_days }}</div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if sales_data.graph_paths and sales_data.graph_paths.daily_sales %}
+        <div class="section">
+          <h2 class="section-title">Sales Visualizations</h2>
+          <div class="graphs-grid">
+            {% if sales_data.graph_paths.daily_sales %}
+            <div class="graph-wrapper">
+              <div class="graph-title">Daily Sales Trend</div>
+              <div class="graph-container">
+                <img src="{{ url_for('serve_graph', filename=sales_data.graph_paths.daily_sales) }}" alt="Daily Sales Trend" />
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if sales_data.graph_paths.weekly_sales %}
+            <div class="graph-wrapper">
+              <div class="graph-title">Weekly Sales Trend</div>
+              <div class="graph-container">
+                <img src="{{ url_for('serve_graph', filename=sales_data.graph_paths.weekly_sales) }}" alt="Weekly Sales Trend" />
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if sales_data.graph_paths.distribution %}
+            <div class="graph-wrapper">
+              <div class="graph-title">Sales Distribution</div>
+              <div class="graph-container">
+                <img src="{{ url_for('serve_graph', filename=sales_data.graph_paths.distribution) }}" alt="Sales Distribution" />
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if sales_data.graph_paths.forecast %}
+            <div class="graph-wrapper" style="grid-column: 1 / -1;">
+              <div class="graph-title">Sales Forecast with Confidence Intervals</div>
+              <div class="graph-container">
+                <img src="{{ url_for('serve_graph', filename=sales_data.graph_paths.forecast) }}" alt="Sales Forecast" />
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if sales_data.daily_sales %}
+        <div class="section">
+          <h2 class="section-title">Daily Sales Summary</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Total Sales ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for day in sales_data.daily_sales[-20:] %}
+                <tr>
+                  <td>{{ day.Date }}</td>
+                  <td>${{ "%.2f"|format(day.Total) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if sales_data.weekly_sales %}
+        <div class="section">
+          <h2 class="section-title">Weekly Sales Summary</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Week Starting</th>
+                  <th>Total Sales ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for week in sales_data.weekly_sales[-10:] %}
+                <tr>
+                  <td>{{ week.Week }}</td>
+                  <td>${{ "%.2f"|format(week.Total) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if sales_data.forecast %}
+        <div class="section">
+          <h2 class="section-title">30-Day Sales Forecast</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Predicted Sales ($)</th>
+                  <th>Lower Bound ($)</th>
+                  <th>Upper Bound ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for forecast in sales_data.forecast %}
+                <tr>
+                  <td>{{ forecast.ds }}</td>
+                  <td>${{ "%.2f"|format(forecast.yhat) }}</td>
+                  <td>${{ "%.2f"|format(forecast.yhat_lower) }}</td>
+                  <td>${{ "%.2f"|format(forecast.yhat_upper) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>
+
